@@ -26,12 +26,33 @@ export const getSeedHash = async (req, res) => {
 export const resetServerSeed = async (req, res) => {
   try {
     const userId = req.user.id;
-    const result = await FairnessService.rotateServerSeed(userId);
+    const user = await User.findById(userId);
     
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Store old seed for reveal
+    const seedRotation = new SeedRotation({
+      userId,
+      oldServerSeed: user.serverSeed,
+      oldServerSeedHash: user.serverSeedHash
+    });
+
+    // Generate new server seed
+    const newServerSeed = generateServerSeed();
+    const newServerSeedHash = hashServerSeed(newServerSeed);
+
+    // Update user with new seed
+    user.serverSeed = newServerSeed;
+    user.serverSeedHash = newServerSeedHash;
+    user.serverSeedRevealedAt = new Date();
+
+    await Promise.all([seedRotation.save(), user.save()]);
+
     res.json({
-      oldServerSeed: result.revealedServerSeed,
-      newServerSeedHash: result.newServerSeedHash,
-      nonce: result.nonce,
+      oldServerSeed: seedRotation.oldServerSeed,
+      newServerSeedHash: newServerSeedHash,
       message: 'Server seed rotated successfully'
     });
   } catch (error) {
@@ -72,9 +93,7 @@ export const getSeedHistory = async (req, res) => {
 
 export const unhashServerSeed = async (req, res) => {
   try {
-    const { serverSeedHash } = req.body;
-    const result = await FairnessService.unhashServerSeed(serverSeedHash);
-    res.json(result);
+    FairnessService.unhashServerSeed();
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
