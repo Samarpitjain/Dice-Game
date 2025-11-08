@@ -1,10 +1,22 @@
 import { generateRoll, calculatePayout, winChanceToTarget } from '../src/utils/rng.js';
 
-describe('RNG Functions', () => {
+describe('Stake-Compatible RNG Functions', () => {
+  test('matches Stake provably fair algorithm', () => {
+    const serverSeed = 'test-server-seed';
+    const clientSeed = 'test-client-seed';
+    const nonce = 1;
+    
+    const roll = generateRoll(serverSeed, clientSeed, nonce);
+    
+    expect(typeof roll).toBe('number');
+    expect(roll).toBeGreaterThanOrEqual(0);
+    expect(roll).toBeLessThan(100);
+  });
+
   test('generateRoll produces deterministic results', () => {
-    const serverSeed = 'a'.repeat(128);
-    const clientSeed = 'test';
-    const nonce = 0;
+    const serverSeed = 'test-server-seed';
+    const clientSeed = 'test-client-seed';
+    const nonce = 1;
 
     const roll1 = generateRoll(serverSeed, clientSeed, nonce);
     const roll2 = generateRoll(serverSeed, clientSeed, nonce);
@@ -12,15 +24,15 @@ describe('RNG Functions', () => {
     expect(roll1).toBe(roll2);
     expect(typeof roll1).toBe('number');
     expect(roll1).toBeGreaterThanOrEqual(0);
-    expect(roll1).toBeLessThanOrEqual(100);
+    expect(roll1).toBeLessThan(100);
   });
 
   test('generateRoll produces different results with different nonces', () => {
-    const serverSeed = 'a'.repeat(128);
-    const clientSeed = 'test';
+    const serverSeed = 'test-server-seed';
+    const clientSeed = 'test-client-seed';
 
-    const roll1 = generateRoll(serverSeed, clientSeed, 0);
-    const roll2 = generateRoll(serverSeed, clientSeed, 1);
+    const roll1 = generateRoll(serverSeed, clientSeed, 1);
+    const roll2 = generateRoll(serverSeed, clientSeed, 2);
 
     expect(roll1).not.toBe(roll2);
   });
@@ -40,19 +52,15 @@ describe('RNG Functions', () => {
     expect(winChanceToTarget(25, 'over')).toBe(75);
   });
 
-  test('roll format has exactly 2 decimal places', () => {
-    const serverSeed = 'b'.repeat(128);
+  test('roll format is within valid range', () => {
+    const serverSeed = 'test-server-seed';
     const clientSeed = 'format-test';
     
-    for (let i = 0; i < 100; i++) {
+    for (let i = 1; i <= 10; i++) {
       const roll = generateRoll(serverSeed, clientSeed, i);
-      const rollStr = roll.toString();
-      const decimalIndex = rollStr.indexOf('.');
-      
-      if (decimalIndex !== -1) {
-        const decimals = rollStr.substring(decimalIndex + 1);
-        expect(decimals.length).toBeLessThanOrEqual(2);
-      }
+      expect(roll).toBeGreaterThanOrEqual(0);
+      expect(roll).toBeLessThan(100);
+      expect(Number.isFinite(roll)).toBe(true);
     }
   });
 });

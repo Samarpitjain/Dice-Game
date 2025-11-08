@@ -17,10 +17,7 @@ export function useSocket() {
       socket.emit('join', state.user.id);
     });
 
-    socket.on('betResult', (data) => {
-      dispatch({ type: 'ADD_BET_RESULT', payload: data.bet });
-      dispatch({ type: 'UPDATE_BALANCE', payload: data.newBalance });
-    });
+    // Socket bet result handler removed to prevent duplicate entries
 
     socket.on('disconnect', () => {
       console.log('Disconnected from server');

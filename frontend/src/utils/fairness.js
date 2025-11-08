@@ -20,15 +20,32 @@ async function hmacSha256(key, message) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+/**
+ * Verify roll using Stake's official provably fair algorithm
+ * @param {string} serverSeed - The raw server seed (unhashed)
+ * @param {string} clientSeed - The client seed string
+ * @param {number} nonce - Nonce counter
+ * @returns {number} Roll result in the range 0.00–99.99
+ */
 export async function verifyRoll(serverSeed, clientSeed, nonce) {
   try {
-    const msg = `${clientSeed}:${nonce}`;
-    const hmac = await hmacSha256(serverSeed, msg);
-    const first8 = hmac.slice(0, 8);
-    const intVal = parseInt(first8, 16);
-    const float = intVal / 0xffffffff;
-    const roll = Math.floor(float * 10001) / 100;
-    return Number(roll.toFixed(2));
+    const input = `${clientSeed}:${nonce}`;
+    const hmac = await hmacSha256(serverSeed, input);
+
+    // Parse HMAC hash in 5-character chunks to avoid bias
+    for (let i = 0; i < hmac.length; i += 5) {
+      const segment = hmac.substring(i, i + 5);
+      const number = parseInt(segment, 16);
+
+      // Only accept numbers below 1,000,000 for unbiased distribution
+      if (number < 1000000) {
+        // Convert number to final roll (0.00 – 99.99)
+        return (number % 10000) / 100;
+      }
+    }
+
+    // Fallback if no valid segment found
+    return 99.99;
   } catch (error) {
     console.error('Verification error:', error);
     throw new Error('Failed to verify roll');

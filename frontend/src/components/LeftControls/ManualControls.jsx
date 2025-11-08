@@ -56,7 +56,17 @@ export default function ManualControls() {
         clientSeed: state.seeds.clientSeed
       });
 
-      // Don't add to state here - socket will handle it
+      const betResult = {
+        ...response.data,
+        betAmount,
+        target,
+        direction,
+        winChance,
+        createdAt: new Date().toISOString()
+      };
+
+      dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
+      dispatch({ type: 'UPDATE_BALANCE', payload: response.data.newBalance });
       
       if (betResult.win) {
         toast.success(`Won ${formatNumber(betResult.profit)}!`);

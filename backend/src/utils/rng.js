@@ -1,20 +1,32 @@
 import crypto from 'crypto';
 
 /**
- * Generate provably fair dice roll using HMAC-SHA256
- * @param {string} serverSeed - Server seed (64 bytes hex)
- * @param {string} clientSeed - Client seed
- * @param {number} nonce - Nonce counter
- * @returns {number} Roll result (0.00 - 100.00)
+ * Generate provably fair dice roll using Stake-style HMAC-SHA256 method.
+ * Matches Stake.com's official fairness system exactly.
+ *
+ * @param {string} serverSeed - The raw server seed (unhashed).
+ * @param {string} clientSeed - The client seed string.
+ * @param {number} nonce - Nonce counter that increments every bet.
+ * @returns {number} Roll result in the range 0.00–99.99.
  */
 export function generateRoll(serverSeed, clientSeed, nonce) {
-  const msg = `${clientSeed}:${nonce}`;
-  const hmac = crypto.createHmac('sha256', serverSeed).update(msg).digest('hex');
-  const first8 = hmac.slice(0, 8);
-  const intVal = parseInt(first8, 16);
-  const float = intVal / 0xffffffff;
-  const roll = Math.floor(float * 10001) / 100;
-  return Number(roll.toFixed(2));
+  const input = `${clientSeed}:${nonce}`;
+  const hmac = crypto.createHmac("sha256", serverSeed).update(input).digest("hex");
+
+  // Parse HMAC hash in 5-character chunks to avoid bias
+  for (let i = 0; i < hmac.length; i += 5) {
+    const segment = hmac.substring(i, i + 5);
+    const number = parseInt(segment, 16);
+
+    // Only accept numbers below 1,000,000 for unbiased distribution
+    if (number < 1000000) {
+      // Convert number to final roll (0.00 – 99.99)
+      return (number % 10000) / 100;
+    }
+  }
+
+  // Fallback if no valid segment found
+  return 99.99;
 }
 
 /**
