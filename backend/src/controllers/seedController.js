@@ -1,0 +1,88 @@
+import User from '../models/User.js';
+import SeedRotation from '../models/SeedRotation.js';
+import { generateServerSeed, hashServerSeed } from '../utils/rng.js';
+
+export const getSeedHash = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({
+      serverSeedHash: user.serverSeedHash,
+      clientSeed: user.clientSeed,
+      nonce: user.nonce
+    });
+  } catch (error) {
+    console.error('Get seed hash error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const resetServerSeed = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Store old seed for reveal
+    const seedRotation = new SeedRotation({
+      userId,
+      oldServerSeed: user.serverSeed,
+      oldServerSeedHash: user.serverSeedHash
+    });
+
+    // Generate new server seed
+    const newServerSeed = generateServerSeed();
+    const newServerSeedHash = hashServerSeed(newServerSeed);
+
+    // Update user with new seed
+    user.serverSeed = newServerSeed;
+    user.serverSeedHash = newServerSeedHash;
+    user.serverSeedRevealedAt = new Date();
+
+    await Promise.all([seedRotation.save(), user.save()]);
+
+    res.json({
+      oldServerSeed: seedRotation.oldServerSeed,
+      newServerSeedHash: newServerSeedHash,
+      message: 'Server seed rotated successfully'
+    });
+  } catch (error) {
+    console.error('Reset server seed error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const updateClientSeed = async (req, res) => {
+  try {
+    const { clientSeed } = req.body;
+    const userId = req.user.id;
+
+    if (!clientSeed || typeof clientSeed !== 'string' || clientSeed.length < 1) {
+      return res.status(400).json({ error: 'Invalid client seed' });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.clientSeed = clientSeed;
+    await user.save();
+
+    res.json({
+      clientSeed: user.clientSeed,
+      message: 'Client seed updated successfully'
+    });
+  } catch (error) {
+    console.error('Update client seed error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

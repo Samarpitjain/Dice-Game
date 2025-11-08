@@ -1,0 +1,136 @@
+{
+  "colors": {
+    "background": {
+      "value": "#0F0F12",
+      "type": "color",
+      "description": "Main background color - deep dark blue"
+    },
+    "text": {
+      "primary": {
+        "value": "#FFFFFF",
+        "type": "color",
+        "description": "Primary text color - pure white"
+      },
+      "secondary": {
+        "value": "#8F9BA8",
+        "type": "color",
+        "description": "Secondary text color - muted gray"
+      }
+    },
+    "accent": {
+      "green": {
+        "value": "#00C74D",
+        "type": "color",
+        "description": "Success/win color - bright green"
+      },
+      "blue": {
+        "value": "#1A9FFF",
+        "type": "color",
+        "description": "Primary action color - bright blue"
+      }
+    },
+    "border": {
+      "value": "#1E1E23",
+      "type": "color",
+      "description": "Border and card background color"
+    },
+    "error": {
+      "value": "#FF3B30",
+      "type": "color",
+      "description": "Error/loss color - bright red"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "sans": {
+        "value": "Inter, system-ui, sans-serif",
+        "type": "fontFamily",
+        "description": "Primary font family"
+      },
+      "mono": {
+        "value": "ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace",
+        "type": "fontFamily",
+        "description": "Monospace font for numbers and code"
+      }
+    },
+    "fontSize": {
+      "xs": { "value": "12px", "type": "fontSize" },
+      "sm": { "value": "14px", "type": "fontSize" },
+      "base": { "value": "16px", "type": "fontSize" },
+      "lg": { "value": "18px", "type": "fontSize" },
+      "xl": { "value": "20px", "type": "fontSize" },
+      "2xl": { "value": "24px", "type": "fontSize" },
+      "3xl": { "value": "30px", "type": "fontSize" }
+    },
+    "fontWeight": {
+      "regular": { "value": "400", "type": "fontWeight" },
+      "medium": { "value": "500", "type": "fontWeight" },
+      "semibold": { "value": "600", "type": "fontWeight" },
+      "bold": { "value": "700", "type": "fontWeight" }
+    }
+  },
+  "spacing": {
+    "xs": { "value": "4px", "type": "spacing" },
+    "sm": { "value": "8px", "type": "spacing" },
+    "md": { "value": "16px", "type": "spacing" },
+    "lg": { "value": "24px", "type": "spacing" },
+    "xl": { "value": "32px", "type": "spacing" },
+    "2xl": { "value": "48px", "type": "spacing" }
+  },
+  "borderRadius": {
+    "input": {
+      "value": "6px",
+      "type": "borderRadius",
+      "description": "Small inputs and buttons"
+    },
+    "card": {
+      "value": "8px",
+      "type": "borderRadius",
+      "description": "Cards and panels"
+    },
+    "control": {
+      "value": "20px",
+      "type": "borderRadius",
+      "description": "Main control buttons"
+    }
+  },
+  "shadows": {
+    "card": {
+      "value": "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+      "type": "boxShadow",
+      "description": "Subtle card shadow"
+    },
+    "glow": {
+      "value": "0 0 0 4px rgba(26, 159, 255, 0.3)",
+      "type": "boxShadow",
+      "description": "Button hover glow effect"
+    }
+  },
+  "animation": {
+    "duration": {
+      "fast": { "value": "150ms", "type": "duration" },
+      "normal": { "value": "250ms", "type": "duration" },
+      "slow": { "value": "400ms", "type": "duration" }
+    },
+    "easing": {
+      "ease": { "value": "cubic-bezier(0.4, 0, 0.2, 1)", "type": "cubicBezier" },
+      "easeIn": { "value": "cubic-bezier(0.4, 0, 1, 1)", "type": "cubicBezier" },
+      "easeOut": { "value": "cubic-bezier(0, 0, 0.2, 1)", "type": "cubicBezier" }
+    }
+  },
+  "layout": {
+    "breakpoints": {
+      "sm": { "value": "640px", "type": "dimension" },
+      "md": { "value": "768px", "type": "dimension" },
+      "lg": { "value": "1024px", "type": "dimension" },
+      "xl": { "value": "1280px", "type": "dimension" }
+    },
+    "grid": {
+      "columns": {
+        "desktop": { "value": "12", "type": "number" },
+        "tablet": { "value": "8", "type": "number" },
+        "mobile": { "value": "4", "type": "number" }
+      }
+    }
+  }
+}
