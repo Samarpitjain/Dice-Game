@@ -2,7 +2,8 @@ import crypto from 'crypto';
 import User from '../models/User.js';
 import Bet from '../models/Bet.js';
 import SeedRotation from '../models/SeedRotation.js';
-import { generateRoll, calculatePayout, winChanceToTarget } from '../utils/rng.js';
+import { FairnessService } from '../services/FairnessService.js';
+import { calculatePayout, winChanceToTarget } from '../utils/rng.js';
 
 export const placeBet = async (req, res) => {
   try {
@@ -40,8 +41,8 @@ export const placeBet = async (req, res) => {
     // Use provided client seed or user's default
     const effectiveClientSeed = clientSeed || user.clientSeed;
     
-    // Generate roll
-    const roll = generateRoll(user.serverSeed, effectiveClientSeed, user.nonce);
+    // Generate roll using FairnessService
+    const roll = FairnessService.generateRoll(user.serverSeed, effectiveClientSeed, user.nonce);
     
     // Determine win/loss
     const win = direction === 'under' ? roll < target : roll > target;
@@ -55,6 +56,9 @@ export const placeBet = async (req, res) => {
     const msg = `${effectiveClientSeed}:${user.nonce}`;
     const hmac = crypto.createHmac('sha256', user.serverSeed).update(msg).digest('hex');
 
+    // Extract bet metadata from request
+    const { betType = 'manual', roundNumber, strategy } = req.body;
+
     // Create bet record
     const bet = new Bet({
       userId,
@@ -63,16 +67,20 @@ export const placeBet = async (req, res) => {
       target,
       winChance,
       payout: Number(payout.toFixed(2)),
+      payoutMultiplier: Number(payoutMultiplier.toFixed(4)),
       win,
       profit: Number(profit.toFixed(2)),
       roll,
       nonce: user.nonce,
       serverSeedHash: user.serverSeedHash,
       hmac,
-      clientSeed: effectiveClientSeed
+      clientSeed: effectiveClientSeed,
+      betType,
+      roundNumber,
+      strategy
     });
 
-    // Update user balance and nonce
+    // Update user balance and increment nonce
     user.balance = Number((user.balance + profit).toFixed(2));
     user.nonce += 1;
 
@@ -128,7 +136,7 @@ export const verifyBet = async (req, res) => {
       return res.status(400).json({ error: 'Missing parameters' });
     }
 
-    const roll = generateRoll(serverSeed, clientSeed, parseInt(nonce));
+    const roll = FairnessService.verifyRoll(serverSeed, clientSeed, parseInt(nonce));
     
     res.json({ roll });
   } catch (error) {

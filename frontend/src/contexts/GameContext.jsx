@@ -82,7 +82,7 @@ function gameReducer(state, action) {
         betHistory: [bet, ...state.betHistory.slice(0, 49)],
         seeds: {
           ...state.seeds,
-          nonce: bet.newNonce
+          nonce: state.seeds.nonce + 1
         },
         stats: {
           totalBets: state.stats.totalBets + 1,

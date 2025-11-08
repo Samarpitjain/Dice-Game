@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSeedHash, resetServerSeed, updateClientSeed } from '../controllers/seedController.js';
+import { getSeedHash, resetServerSeed, updateClientSeed, getSeedHistory, unhashServerSeed } from '../controllers/seedController.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { createRateLimitMiddleware, seedRateLimiter } from '../middleware/rateLimiter.js';
 
@@ -12,5 +12,7 @@ router.post('/reset',
   resetServerSeed
 );
 router.post('/client', authenticateToken, updateClientSeed);
+router.get('/history', authenticateToken, getSeedHistory);
+router.post('/unhash', unhashServerSeed);
 
 export default router;

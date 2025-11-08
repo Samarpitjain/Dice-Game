@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useGame } from '../../contexts/GameContext';
 import { gameAPI } from '../../utils/api';
 import { formatNumber, formatTime } from '../../utils/format';
+import BetDetailModal from '../Fairness/BetDetailModal';
 
 export default function BetHistory() {
   const { state, dispatch } = useGame();
+  const [selectedBet, setSelectedBet] = useState(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -34,7 +36,8 @@ export default function BetHistory() {
           state.betHistory.map((bet, index) => (
             <div
               key={bet._id || index}
-              className="flex items-center justify-between p-3 bg-background rounded-lg border border-border-color"
+              className="flex items-center justify-between p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 cursor-pointer transition-colors"
+              onClick={() => setSelectedBet(bet)}
             >
               <div className="flex items-center space-x-3">
                 <div
@@ -73,6 +76,12 @@ export default function BetHistory() {
           ))
         )}
       </div>
+      
+      <BetDetailModal
+        isOpen={!!selectedBet}
+        onClose={() => setSelectedBet(null)}
+        bet={selectedBet}
+      />
     </div>
   );
 }

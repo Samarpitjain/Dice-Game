@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import { generateServerSeed, hashServerSeed } from '../utils/rng.js';
+import { FairnessService } from '../services/FairnessService.js';
 
 export const loginDemo = async (req, res) => {
   try {
@@ -14,17 +14,16 @@ export const loginDemo = async (req, res) => {
 
     if (!user) {
       // Create new demo user
-      const serverSeed = generateServerSeed();
-      const serverSeedHash = hashServerSeed(serverSeed);
-
       user = new User({
         username,
-        serverSeed,
-        serverSeedHash,
         balance: 1000.00
       });
 
       await user.save();
+      
+      // Initialize seed pair
+      await FairnessService.initializeSeedPair(user._id);
+      user = await User.findById(user._id);
     }
 
     const token = jwt.sign(

@@ -58,6 +58,7 @@ export function useAutoBet() {
       };
 
       dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
+      dispatch({ type: 'UPDATE_SEEDS', payload: { nonce: betResult.newNonce } });
       return betResult;
     } catch (error) {
       toast.error(error.response?.data?.error || 'Bet failed');

@@ -45,6 +45,8 @@ export const seedAPI = {
   getSeedHash: () => api.get('/api/seeds/hash'),
   resetServerSeed: () => api.post('/api/seeds/reset'),
   updateClientSeed: (clientSeed) => api.post('/api/seeds/client', { clientSeed }),
+  getSeedHistory: (limit = 10) => api.get(`/api/seeds/history?limit=${limit}`),
+  unhashServerSeed: (serverSeedHash) => api.post('/api/seeds/unhash', { serverSeedHash }),
 };
 
 export default api;

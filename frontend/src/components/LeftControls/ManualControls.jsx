@@ -67,6 +67,7 @@ export default function ManualControls() {
 
       dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
       dispatch({ type: 'UPDATE_BALANCE', payload: response.data.newBalance });
+      dispatch({ type: 'UPDATE_SEEDS', payload: { nonce: response.data.newNonce } });
       
       if (betResult.win) {
         toast.success(`Won ${formatNumber(betResult.profit)}!`);

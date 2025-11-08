@@ -8,6 +8,7 @@ import ManualControls from './LeftControls/ManualControls';
 import AutoControls from './LeftControls/AutoControls';
 import BetHistory from './Right/BetHistory';
 import StatsPanel from './Right/StatsPanel';
+import FairnessModal from './Fairness/FairnessModal';
 import Button from './Shared/Button';
 import Input from './Shared/Input';
 import toast from 'react-hot-toast';
@@ -15,6 +16,7 @@ import toast from 'react-hot-toast';
 export default function GamePage() {
   const { state, dispatch } = useGame();
   const [activeTab, setActiveTab] = useState('manual');
+  const [showFairnessModal, setShowFairnessModal] = useState(false);
 
   useSocket(); // Initialize socket connection
 
@@ -100,6 +102,11 @@ export default function GamePage() {
           </div>
         </div>
       </div>
+      
+      <FairnessModal
+        isOpen={showFairnessModal}
+        onClose={() => setShowFairnessModal(false)}
+      />
     </div>
   );
 }
