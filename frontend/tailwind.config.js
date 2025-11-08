@@ -7,13 +7,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0F0F12',
+        background: '#0f212e',
+        'card-bg': '#1a2c38',
         'text-primary': '#FFFFFF',
-        'text-secondary': '#8F9BA8',
-        'accent-green': '#00C74D',
-        'accent-blue': '#1A9FFF',
-        'border-color': '#1E1E23',
-        'error': '#FF3B30',
+        'text-secondary': '#b1bad3',
+        'accent-green': '#00e701',
+        'accent-blue': '#2f4553',
+        'border-color': '#2f4553',
+        'error': '#ff3b30',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

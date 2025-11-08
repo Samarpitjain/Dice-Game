@@ -62,12 +62,12 @@ export default function GamePage() {
           <div className="lg:col-span-3">
             <div className="card">
               {/* Tab Navigation */}
-              <div className="flex mb-6 bg-background rounded-lg p-1">
+              <div className="flex mb-6 bg-background rounded-lg p-1 border border-border-color">
                 <button
                   onClick={() => setActiveTab('manual')}
                   className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                     activeTab === 'manual'
-                      ? 'bg-accent-blue text-white'
+                      ? 'bg-[#557086] text-white'
                       : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
@@ -77,7 +77,7 @@ export default function GamePage() {
                   onClick={() => setActiveTab('auto')}
                   className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
                     activeTab === 'auto'
-                      ? 'bg-accent-blue text-white'
+                      ? 'bg-[#557086] text-white'
                       : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >

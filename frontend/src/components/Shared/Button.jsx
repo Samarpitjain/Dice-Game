@@ -12,10 +12,10 @@ const Button = forwardRef(({
   const baseClasses = 'font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'btn-primary focus:ring-accent-blue',
-    secondary: 'btn-secondary focus:ring-gray-500',
-    success: 'bg-accent-green hover:bg-green-600 text-white focus:ring-accent-green',
-    danger: 'bg-error hover:bg-red-600 text-white focus:ring-error'
+    primary: 'bg-[#557086] hover:bg-[#6a8199] text-white focus:ring-[#557086]',
+    secondary: 'bg-accent-blue hover:bg-[#3d5564] text-text-primary focus:ring-accent-blue',
+    success: 'bg-accent-green hover:bg-[#00d001] text-black font-bold focus:ring-accent-green',
+    danger: 'bg-error hover:bg-[#ff4d42] text-white focus:ring-error'
   };
 
   const sizes = {

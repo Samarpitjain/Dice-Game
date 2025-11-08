@@ -8,62 +8,60 @@ export default function StatsPanel() {
   const winRate = stats.totalBets > 0 ? (stats.winCount / stats.totalBets) * 100 : 0;
 
   return (
-    <div className="space-y-4">
-      {/* Balance */}
-      <div className="card">
-        <h3 className="text-lg font-semibold mb-2">Balance</h3>
-        <div className="text-2xl font-mono font-bold text-accent-green">
-          {formatNumber(balance)}
+    <div className="card">
+      <h3 className="text-lg font-semibold mb-4">Session Stats</h3>
+      
+      <div className="space-y-2">
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Balance</span>
+            <span className="font-mono text-accent-green font-semibold">
+              {formatNumber(balance)}
+            </span>
+          </div>
         </div>
-      </div>
 
-      {/* Session Stats */}
-      <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Session Stats</h3>
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Total Bets</span>
+            <span className="font-mono text-sm">{stats.totalBets}</span>
+          </div>
+        </div>
         
-        <div className="space-y-3">
-          <div className="flex justify-between">
-            <span className="text-text-secondary">Total Bets</span>
-            <span className="font-mono">{stats.totalBets}</span>
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Total Wagered</span>
+            <span className="font-mono text-sm">{formatNumber(stats.totalWagered)}</span>
           </div>
-          
-          <div className="flex justify-between">
-            <span className="text-text-secondary">Total Wagered</span>
-            <span className="font-mono">{formatNumber(stats.totalWagered)}</span>
-          </div>
-          
-          <div className="flex justify-between">
-            <span className="text-text-secondary">Total Profit</span>
-            <span className={`font-mono ${
+        </div>
+        
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Total Profit</span>
+            <span className={`font-mono text-sm font-semibold ${
               stats.totalProfit >= 0 ? 'text-accent-green' : 'text-error'
             }`}>
               {stats.totalProfit >= 0 ? '+' : ''}{formatNumber(stats.totalProfit)}
             </span>
           </div>
-          
-          <div className="flex justify-between">
-            <span className="text-text-secondary">Win Rate</span>
-            <span className="font-mono">{formatPercentage(winRate)}</span>
+        </div>
+        
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Win Rate</span>
+            <span className="font-mono text-sm">{formatPercentage(winRate)}</span>
           </div>
-          
-          <div className="flex justify-between">
-            <span className="text-text-secondary">Wins / Losses</span>
-            <span className="font-mono">
+        </div>
+        
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Wins / Losses</span>
+            <span className="font-mono text-sm">
               <span className="text-accent-green">{stats.winCount}</span>
               {' / '}
               <span className="text-error">{stats.lossCount}</span>
             </span>
           </div>
-        </div>
-      </div>
-
-      {/* Profit Chart Placeholder */}
-      <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Profit Chart</h3>
-        <div className="h-32 bg-background rounded-lg border border-border-color flex items-center justify-center">
-          <span className="text-text-secondary text-sm">
-            Chart coming soon
-          </span>
         </div>
       </div>
     </div>

@@ -14,11 +14,11 @@ export default function RollBar() {
   const rollPosition = lastRoll ? getPosition(lastRoll.roll) : 0;
 
   return (
-    <div className="card h-32 flex flex-col justify-center">
-      <div className="mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-text-secondary text-sm">Roll</span>
-          <span className="text-text-secondary text-sm">Target: {formatNumber(target)}</span>
+    <div className="card">
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-text-secondary text-sm font-medium">Roll</span>
+          <span className="text-text-secondary text-sm">Target: <span className="text-white font-mono font-semibold">{formatNumber(target)}</span></span>
         </div>
         
         {/* Roll Bar */}
@@ -95,31 +95,40 @@ export default function RollBar() {
       </div>
 
       {/* Roll Result */}
-      <div className="text-center">
-        {isRolling ? (
-          <motion.div 
-            className="text-2xl font-mono font-bold text-accent-blue"
-            animate={{ opacity: [1, 0.3, 1] }}
-            transition={{ duration: 0.25, repeat: Infinity }}
-          >
-            Rolling...
-          </motion.div>
-        ) : lastRoll ? (
-          <motion.div 
-            className={`text-3xl font-mono font-bold ${
-              lastRoll.win ? 'text-accent-green' : 'text-error'
-            }`}
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {formatNumber(lastRoll.roll)}
-          </motion.div>
-        ) : (
-          <div className="text-2xl font-mono font-bold text-text-secondary">
-            ---.--
-          </div>
-        )}
+      <div className="mt-6 p-4 bg-background rounded-lg border border-border-color">
+        <div className="text-center">
+          {isRolling ? (
+            <motion.div 
+              className="text-3xl font-mono font-bold text-text-secondary"
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 0.25, repeat: Infinity }}
+            >
+              Rolling...
+            </motion.div>
+          ) : lastRoll ? (
+            <div>
+              <motion.div 
+                className={`text-4xl font-mono font-bold mb-2 ${
+                  lastRoll.win ? 'text-accent-green' : 'text-error'
+                }`}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                {formatNumber(lastRoll.roll)}
+              </motion.div>
+              <div className={`text-sm font-medium ${
+                lastRoll.win ? 'text-accent-green' : 'text-error'
+              }`}>
+                {lastRoll.win ? 'WIN' : 'LOSS'}
+              </div>
+            </div>
+          ) : (
+            <div className="text-3xl font-mono font-bold text-text-secondary">
+              ---.--
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

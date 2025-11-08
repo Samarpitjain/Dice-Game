@@ -39,7 +39,7 @@ export default function AutoControls() {
             checked={autoConfig.stopOnWin}
             onChange={(e) => updateConfig('stopOnWin', e.target.checked)}
             disabled={isRunning}
-            className="rounded border-gray-600 bg-border-color text-accent-blue focus:ring-accent-blue"
+            className="rounded border-border-color bg-background text-accent-green focus:ring-accent-green"
           />
           <label htmlFor="stopOnWin" className="text-sm text-text-primary">
             Stop on win target
@@ -64,7 +64,7 @@ export default function AutoControls() {
             checked={autoConfig.stopOnLoss}
             onChange={(e) => updateConfig('stopOnLoss', e.target.checked)}
             disabled={isRunning}
-            className="rounded border-gray-600 bg-border-color text-accent-blue focus:ring-accent-blue"
+            className="rounded border-border-color bg-background text-accent-green focus:ring-accent-green"
           />
           <label htmlFor="stopOnLoss" className="text-sm text-text-primary">
             Stop on loss limit
@@ -116,7 +116,7 @@ export default function AutoControls() {
             checked={autoConfig.resetOnWin}
             onChange={(e) => updateConfig('resetOnWin', e.target.checked)}
             disabled={isRunning}
-            className="rounded border-gray-600 bg-border-color text-accent-blue focus:ring-accent-blue"
+            className="rounded border-border-color bg-background text-accent-green focus:ring-accent-green"
           />
           <label htmlFor="resetOnWin" className="text-sm text-text-primary">
             Reset bet on win
@@ -130,7 +130,7 @@ export default function AutoControls() {
             checked={autoConfig.resetOnLoss}
             onChange={(e) => updateConfig('resetOnLoss', e.target.checked)}
             disabled={isRunning}
-            className="rounded border-gray-600 bg-border-color text-accent-blue focus:ring-accent-blue"
+            className="rounded border-border-color bg-background text-accent-green focus:ring-accent-green"
           />
           <label htmlFor="resetOnLoss" className="text-sm text-text-primary">
             Reset bet on loss
@@ -140,16 +140,18 @@ export default function AutoControls() {
 
       {/* Stats */}
       {isRunning && (
-        <div className="card bg-background">
+        <div className="space-y-2">
           <h3 className="text-sm font-medium text-text-secondary mb-2">Auto Bet Stats</h3>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span>Bets Placed:</span>
-              <span className="font-mono">{stats.betsPlaced}</span>
+          <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+            <div className="flex justify-between items-center">
+              <span className="text-text-secondary text-sm">Bets Placed</span>
+              <span className="font-mono text-sm">{stats.betsPlaced}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Current Bet:</span>
-              <span className="font-mono">{formatNumber(stats.currentBet)}</span>
+          </div>
+          <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+            <div className="flex justify-between items-center">
+              <span className="text-text-secondary text-sm">Current Bet</span>
+              <span className="font-mono text-sm">{formatNumber(stats.currentBet)}</span>
             </div>
           </div>
         </div>

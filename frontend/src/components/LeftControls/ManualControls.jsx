@@ -97,13 +97,13 @@ export default function ManualControls() {
           step="0.01"
         />
         <div className="flex gap-2 mt-2">
-          <Button size="sm" variant="secondary" onClick={() => handleQuickBet(0.5)}>
+          <Button size="sm" variant="secondary" onClick={() => handleQuickBet(0.5)} className="flex-1">
             1/2
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => handleQuickBet(2)}>
+          <Button size="sm" variant="secondary" onClick={() => handleQuickBet(2)} className="flex-1">
             2x
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: balance })}>
+          <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: balance })} className="flex-1">
             Max
           </Button>
         </div>
@@ -146,16 +146,20 @@ export default function ManualControls() {
       </div>
 
       {/* Payout Info */}
-      <div className="card bg-background">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-text-secondary">Payout</span>
-          <span className="font-mono">{formatMultiplier(payout)}</span>
+      <div className="space-y-2">
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Payout</span>
+            <span className="font-mono text-sm">{formatMultiplier(payout)}</span>
+          </div>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-text-secondary">Potential Win</span>
-          <span className="font-mono text-accent-green">
-            {formatNumber(potentialWin)}
-          </span>
+        <div className="p-3 bg-background rounded-lg border border-border-color hover:bg-background/50 transition-colors">
+          <div className="flex justify-between items-center">
+            <span className="text-text-secondary text-sm">Potential Win</span>
+            <span className="font-mono text-sm text-accent-green font-semibold">
+              {formatNumber(potentialWin)}
+            </span>
+          </div>
         </div>
       </div>
 

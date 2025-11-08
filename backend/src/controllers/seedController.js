@@ -93,7 +93,9 @@ export const getSeedHistory = async (req, res) => {
 
 export const unhashServerSeed = async (req, res) => {
   try {
-    FairnessService.unhashServerSeed();
+    const { serverSeedHash } = req.body;
+    const result = await FairnessService.unhashServerSeed(serverSeedHash);
+    res.json(result);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
