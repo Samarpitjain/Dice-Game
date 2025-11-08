@@ -52,7 +52,7 @@ export default function BetHistory() {
                     </span>
                   </div>
                   <div className="text-xs text-text-secondary">
-                    {formatTime(bet.createdAt || bet.timestamp)}
+                    {formatTime(bet.createdAt || bet.timestamp || Date.now())}
                   </div>
                 </div>
               </div>

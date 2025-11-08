@@ -20,11 +20,16 @@ export function formatMultiplier(multiplier) {
 }
 
 export function formatTime(date) {
-  return new Intl.DateTimeFormat('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  }).format(new Date(date));
+  if (!date) return '--:--:--';
+  try {
+    return new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(new Date(date));
+  } catch {
+    return '--:--:--';
+  }
 }
 
 export function truncateString(str, length = 10) {
