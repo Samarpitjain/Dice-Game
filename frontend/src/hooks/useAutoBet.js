@@ -128,7 +128,7 @@ export function useAutoBet() {
     };
 
     // Start the betting loop
-    intervalRef.current = setInterval(runBet, 1000); // 1 second delay between bets
+    intervalRef.current = setInterval(runBet, 100); // 100ms delay between bets
   }, [isRunning, autoConfig, state.betAmount, state.stats.totalProfit, state.balance, placeSingleBet, stopAutoBet]);
 
   return {

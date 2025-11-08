@@ -3,15 +3,15 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 // Rate limiter for bet placement
 export const betRateLimiter = new RateLimiterMemory({
   keyPrefix: 'bet_limit',
-  points: 10, // 10 bets
+  points: 120, // 120 bets
   duration: 60, // per 60 seconds
 });
 
 // Rate limiter for seed operations
 export const seedRateLimiter = new RateLimiterMemory({
   keyPrefix: 'seed_limit',
-  points: 5, // 5 operations
-  duration: 300, // per 5 minutes
+  points: 10, // 10 operations
+  duration: 3600, // per 1 hour
 });
 
 export const createRateLimitMiddleware = (limiter) => {

@@ -56,15 +56,7 @@ export default function ManualControls() {
         clientSeed: state.seeds.clientSeed
       });
 
-      const betResult = {
-        ...response.data,
-        betAmount,
-        target,
-        direction,
-        winChance
-      };
-
-      dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
+      // Don't add to state here - socket will handle it
       
       if (betResult.win) {
         toast.success(`Won ${formatNumber(betResult.profit)}!`);
