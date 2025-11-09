@@ -13,17 +13,22 @@ export const loginDemo = async (req, res) => {
     let user = await User.findOne({ username });
 
     if (!user) {
-      // Create new demo user
+      // Generate seeds before creating user
+      const serverSeed = FairnessService.generateServerSeed();
+      const clientSeed = FairnessService.generateClientSeed();
+      const serverSeedHash = FairnessService.hashServerSeed(serverSeed);
+
+      // Create new demo user with seeds
       user = new User({
         username,
-        balance: 1000.00
+        balance: 1000.00,
+        serverSeed,
+        serverSeedHash,
+        clientSeed,
+        nonce: 1
       });
 
       await user.save();
-      
-      // Initialize seed pair
-      await FairnessService.initializeSeedPair(user._id);
-      user = await User.findById(user._id);
     }
 
     const token = jwt.sign(
