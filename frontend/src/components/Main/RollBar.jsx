@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useGame } from '../../contexts/GameContext';
 import { formatNumber } from '../../utils/format';
+import DiceControls from './DiceControls';
 
 export default function RollBar() {
   const { state } = useGame();
@@ -130,6 +131,9 @@ export default function RollBar() {
           )}
         </div>
       </div>
+
+      {/* Dice Controls */}
+      <DiceControls />
     </div>
   );
 }

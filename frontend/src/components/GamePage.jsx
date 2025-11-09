@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Zap } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
 import { useSocket } from '../hooks/useSocket';
 import { authAPI } from '../utils/api';
@@ -6,6 +7,7 @@ import Header from './Header';
 import RollBar from './Main/RollBar';
 import ManualControls from './LeftControls/ManualControls';
 import AutoControls from './LeftControls/AutoControls';
+import AdvancedControls from './LeftControls/AdvancedControls';
 import BetHistory from './Right/BetHistory';
 import StatsPanel from './Right/StatsPanel';
 import FairnessModal from './Fairness/FairnessModal';
@@ -83,10 +85,20 @@ export default function GamePage() {
                 >
                   Auto
                 </button>
+                <button
+                  onClick={() => setActiveTab('advanced')}
+                  className={`w-12 py-2 rounded-md transition-colors flex items-center justify-center ${
+                    activeTab === 'advanced'
+                      ? 'bg-[#557086] text-white'
+                      : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  <Zap size={18} />
+                </button>
               </div>
 
               {/* Tab Content */}
-              {activeTab === 'manual' ? <ManualControls /> : <AutoControls />}
+              {activeTab === 'manual' ? <ManualControls /> : activeTab === 'auto' ? <AutoControls /> : <AdvancedControls />}
             </div>
           </div>
 

@@ -21,14 +21,7 @@ export default function ManualControls() {
     dispatch({ type: 'SET_BET_AMOUNT', payload: amount });
   };
 
-  const handleWinChanceChange = (value) => {
-    const chance = parseFloat(value) || 0;
-    dispatch({ type: 'SET_WIN_CHANCE', payload: chance });
-  };
 
-  const handleDirectionChange = (newDirection) => {
-    dispatch({ type: 'SET_DIRECTION', payload: newDirection });
-  };
 
   const handleQuickBet = (multiplier) => {
     dispatch({ type: 'SET_BET_AMOUNT', payload: betAmount * multiplier });
@@ -105,42 +98,6 @@ export default function ManualControls() {
           </Button>
           <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: balance })} className="flex-1">
             Max
-          </Button>
-        </div>
-      </div>
-
-      {/* Win Chance */}
-      <div>
-        <Input
-          label="Win Chance (%)"
-          type="number"
-          value={winChance}
-          onChange={(e) => handleWinChanceChange(e.target.value)}
-          min="0.01"
-          max="95"
-          step="0.01"
-        />
-      </div>
-
-      {/* Direction */}
-      <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">
-          Direction
-        </label>
-        <div className="flex gap-2">
-          <Button
-            variant={direction === 'under' ? 'primary' : 'secondary'}
-            onClick={() => handleDirectionChange('under')}
-            className="flex-1"
-          >
-            Under {formatNumber(target)}
-          </Button>
-          <Button
-            variant={direction === 'over' ? 'primary' : 'secondary'}
-            onClick={() => handleDirectionChange('over')}
-            className="flex-1"
-          >
-            Over {formatNumber(target)}
           </Button>
         </div>
       </div>

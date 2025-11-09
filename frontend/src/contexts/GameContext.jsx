@@ -67,6 +67,14 @@ function gameReducer(state, action) {
         target: action.payload === 'under' ? state.winChance : 100 - state.winChance
       };
 
+    case 'SET_TARGET':
+      const target = Math.max(0.01, Math.min(99.99, action.payload));
+      return {
+        ...state,
+        target,
+        winChance: state.direction === 'under' ? target : 100 - target
+      };
+
     case 'SET_ROLLING':
       return {
         ...state,
