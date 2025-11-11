@@ -25,7 +25,7 @@ export const loginDemo = async (req, res) => {
         serverSeed,
         serverSeedHash,
         clientSeed,
-        nonce: 1
+        nonce: 0
       });
 
       await user.save();

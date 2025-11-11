@@ -10,9 +10,10 @@ export default function AdvancedControls() {
   const { state, dispatch } = useGame();
   const { isRunning, autoConfig, setAutoConfig, startAutoBet, stopAutoBet, stats, selectedStrategy, setSelectedStrategy, customStrategies, saveCustomStrategy, deleteCustomStrategy } = useAutoBet();
   const [showStrategyBuilder, setShowStrategyBuilder] = useState(false);
+  const [numberOfBets, setNumberOfBets] = useState(10);
 
   const handleStartAutoBet = () => {
-    startAutoBet(Infinity);
+    startAutoBet(numberOfBets);
   };
 
   return (
@@ -41,6 +42,17 @@ export default function AdvancedControls() {
           </Button>
         </div>
       </div>
+
+      {/* Number of Bets */}
+      <Input
+        label="Number of Bets"
+        type="number"
+        value={numberOfBets}
+        onChange={(e) => setNumberOfBets(parseInt(e.target.value) || 1)}
+        min="1"
+        max="1000"
+        disabled={isRunning}
+      />
 
       {/* Select Strategy */}
       <div>

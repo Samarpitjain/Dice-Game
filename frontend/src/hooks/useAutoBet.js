@@ -290,7 +290,7 @@ export function useAutoBet() {
       }
     };
 
-    intervalRef.current = setInterval(runBet, 300);
+    intervalRef.current = setInterval(runBet, 600);
   }, [isRunning, autoConfig, state.betAmount, state.stats.totalProfit, state.balance, placeSingleBet, stopAutoBet, applyStrategy]);
 
   return {

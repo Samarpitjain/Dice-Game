@@ -47,6 +47,7 @@ export const resetServerSeed = async (req, res) => {
     user.serverSeed = newServerSeed;
     user.serverSeedHash = newServerSeedHash;
     user.serverSeedRevealedAt = new Date();
+    user.nonce = 0;
 
     await Promise.all([seedRotation.save(), user.save()]);
 

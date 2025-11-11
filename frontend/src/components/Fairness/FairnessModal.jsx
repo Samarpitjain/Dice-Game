@@ -61,7 +61,7 @@ export default function FairnessModal({ isOpen, onClose }) {
         payload: { 
           clientSeed: newClientSeed,
           serverSeedHash: response.data.newServerSeedHash,
-          nonce: 1
+          nonce: 0
         }
       });
 
@@ -213,7 +213,7 @@ export default function FairnessModal({ isOpen, onClose }) {
                         Total bets made with pair
                       </label>
                       <div className="p-3 bg-background rounded font-mono text-sm">
-                        {state.seeds.nonce}
+                        {state.seeds.nonce || 0}
                       </div>
                     </div>
                   </div>
