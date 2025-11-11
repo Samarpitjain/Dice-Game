@@ -7,13 +7,16 @@ import { calculatePayout, winChanceToTarget } from '../utils/rng.js';
 
 export const placeBet = async (req, res) => {
   try {
-    const { betAmount, target, direction, clientSeed } = req.body;
+    const { betAmount, target, direction } = req.body;
     const userId = req.user.id;
 
     // Validation
     if (!betAmount || betAmount < 0.01 || betAmount > 1000) {
       return res.status(400).json({ error: 'Invalid bet amount' });
     }
+    
+    // Convert bet amount to cents for internal calculation
+    const betAmountCents = Math.round(betAmount * 100);
 
     if (!target || target < 0.01 || target > 99.99) {
       return res.status(400).json({ error: 'Invalid target' });
@@ -23,14 +26,18 @@ export const placeBet = async (req, res) => {
       return res.status(400).json({ error: 'Invalid direction' });
     }
 
+    // Get user and lock for atomic update
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.balance < betAmount) {
+    if (user.balance < betAmountCents) {
       return res.status(400).json({ error: 'Insufficient balance' });
     }
+
+    // Store current nonce before increment
+    const currentNonce = user.nonce;
 
     // Calculate win chance
     const winChance = direction === 'under' ? target : 100 - target;
@@ -38,22 +45,19 @@ export const placeBet = async (req, res) => {
       return res.status(400).json({ error: 'Invalid win chance' });
     }
 
-    // Use provided client seed or user's default
-    const effectiveClientSeed = clientSeed || user.clientSeed;
-    
     // Generate roll using FairnessService
-    const roll = FairnessService.generateRoll(user.serverSeed, effectiveClientSeed, user.nonce);
+    const roll = FairnessService.generateRoll(user.serverSeed, user.clientSeed, user.nonce);
     
     // Determine win/loss
     const win = direction === 'under' ? roll < target : roll > target;
     
-    // Calculate payout
+    // Calculate payout in cents
     const payoutMultiplier = calculatePayout(winChance);
-    const payout = win ? betAmount * payoutMultiplier : 0;
-    const profit = payout - betAmount;
+    const payoutCents = win ? Math.round(betAmountCents * payoutMultiplier) : 0;
+    const profitCents = payoutCents - betAmountCents;
 
     // Generate HMAC for verification
-    const msg = `${effectiveClientSeed}:${user.nonce}`;
+    const msg = `${user.clientSeed}:${user.nonce}`;
     const hmac = crypto.createHmac('sha256', user.serverSeed).update(msg).digest('hex');
 
     // Extract bet metadata from request
@@ -62,44 +66,60 @@ export const placeBet = async (req, res) => {
     // Create bet record
     const bet = new Bet({
       userId,
-      betAmount,
+      betAmount: betAmountCents,
       direction,
       target,
       winChance,
-      payout: Number(payout.toFixed(2)),
+      payout: payoutCents,
       payoutMultiplier: Number(payoutMultiplier.toFixed(4)),
       win,
-      profit: Number(profit.toFixed(2)),
+      profit: profitCents,
       roll,
-      nonce: user.nonce,
+      nonce: currentNonce,
       serverSeedHash: user.serverSeedHash,
       hmac,
-      clientSeed: effectiveClientSeed,
+      clientSeed: user.clientSeed,
       betType,
       roundNumber,
       strategy
     });
 
-    // Update user balance and increment nonce
-    user.balance = Number((user.balance + profit).toFixed(2));
-    user.nonce += 1;
+    // Save bet first
+    await bet.save();
+    
+    // Atomically update user balance and increment nonce
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $inc: { nonce: 1, balance: profitCents }
+      },
+      { new: true }
+    );
 
-    await Promise.all([bet.save(), user.save()]);
+    if (!updatedUser) {
+      throw new Error('Failed to update user');
+    }
 
     // Emit to socket for real-time updates
+    const betObject = bet.toObject();
     req.io.to(`user:${userId}`).emit('betResult', {
-      bet: bet.toObject(),
-      newBalance: user.balance,
-      newNonce: user.nonce
+      bet: {
+        ...betObject,
+        betAmount: betObject.betAmount / 100,
+        payout: betObject.payout / 100,
+        profit: betObject.profit / 100
+      },
+      newBalance: updatedUser.balance / 100,
+      newNonce: updatedUser.nonce
     });
 
     res.json({
       roll,
       win,
-      payout: bet.payout,
-      profit: bet.profit,
-      newBalance: user.balance,
-      newNonce: user.nonce,
+      payout: payoutCents / 100, // Convert to decimal
+      profit: profitCents / 100, // Convert to decimal
+      newBalance: updatedUser.balance / 100, // Convert to decimal
+      newNonce: updatedUser.nonce,
       serverSeedHash: user.serverSeedHash
     });
 
@@ -121,7 +141,15 @@ export const getBetHistory = async (req, res) => {
       .skip(skip)
       .lean();
 
-    res.json({ bets });
+    // Convert cents to dollars for display
+    const formattedBets = bets.map(bet => ({
+      ...bet,
+      betAmount: bet.betAmount / 100,
+      payout: bet.payout / 100,
+      profit: bet.profit / 100
+    }));
+
+    res.json({ bets: formattedBets });
   } catch (error) {
     console.error('Get bet history error:', error);
     res.status(500).json({ error: 'Internal server error' });

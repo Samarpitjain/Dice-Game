@@ -21,7 +21,7 @@ export const loginDemo = async (req, res) => {
       // Create new demo user with seeds
       user = new User({
         username,
-        balance: 1000.00,
+        balance: 100000, // 1000.00 in cents
         serverSeed,
         serverSeedHash,
         clientSeed,
@@ -42,7 +42,7 @@ export const loginDemo = async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
-        balance: user.balance,
+        balance: user.balance / 100, // Convert to decimal for display
         clientSeed: user.clientSeed,
         serverSeedHash: user.serverSeedHash,
         nonce: user.nonce
@@ -66,7 +66,7 @@ export const getProfile = async (req, res) => {
       user: {
         id: user._id,
         username: user.username,
-        balance: user.balance,
+        balance: user.balance / 100, // Convert to decimal for display
         clientSeed: user.clientSeed,
         serverSeedHash: user.serverSeedHash,
         nonce: user.nonce,

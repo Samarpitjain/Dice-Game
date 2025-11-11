@@ -52,9 +52,8 @@ export const resetServerSeed = async (req, res) => {
     await Promise.all([seedRotation.save(), user.save()]);
 
     res.json({
-      oldServerSeed: seedRotation.oldServerSeed,
       newServerSeedHash: newServerSeedHash,
-      message: 'Server seed rotated successfully'
+      message: 'Server seed rotated successfully. Previous seed saved to history.'
     });
   } catch (error) {
     console.error('Reset server seed error:', error);

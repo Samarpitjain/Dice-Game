@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   },
   balance: {
     type: Number,
-    default: 1000.00,
+    default: 100000, // Stored in cents (1000.00 * 100)
     min: 0
   },
   clientSeed: {
