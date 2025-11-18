@@ -6,7 +6,7 @@ import Button from '../Shared/Button';
 import Input from '../Shared/Input';
 export default function AutoControls() {
   const { state, dispatch } = useGame();
-  const { isRunning, autoConfig, setAutoConfig, startAutoBet, stopAutoBet, stats } = useAutoBet();
+  const { isRunning, autoConfig, setAutoConfig, startBasicAutoBet, stopAutoBet, stats } = useAutoBet();
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const updateConfig = (key, value) => {
@@ -135,8 +135,9 @@ export default function AutoControls() {
             type="number"
             value={autoConfig.stopOnWin ? autoConfig.winTarget : ''}
             onChange={(e) => {
-              updateConfig('winTarget', e.target.value);
-              updateConfig('stopOnWin', !!e.target.value);
+              const value = e.target.value;
+              updateConfig('winTarget', value);
+              updateConfig('stopOnWin', !!value && parseFloat(value) > 0);
             }}
             step="0.01"
             disabled={isRunning}
@@ -148,8 +149,9 @@ export default function AutoControls() {
             type="number"
             value={autoConfig.stopOnLoss ? autoConfig.lossLimit : ''}
             onChange={(e) => {
-              updateConfig('lossLimit', e.target.value);
-              updateConfig('stopOnLoss', !!e.target.value);
+              const value = e.target.value;
+              updateConfig('lossLimit', value);
+              updateConfig('stopOnLoss', !!value && parseFloat(value) > 0);
             }}
             step="0.01"
             disabled={isRunning}
@@ -180,7 +182,7 @@ export default function AutoControls() {
       <Button
         variant={isRunning ? 'danger' : 'success'}
         size="lg"
-        onClick={isRunning ? stopAutoBet : () => startAutoBet(autoConfig.numberOfBets)}
+        onClick={isRunning ? stopAutoBet : () => startBasicAutoBet(autoConfig.numberOfBets)}
         disabled={!isRunning && state.balance < state.betAmount}
         className="w-full"
       >

@@ -228,7 +228,7 @@ export function useAutoBet() {
     }
   }, [state.target, state.direction, state.seeds.clientSeed, state.winChance, dispatch]);
 
-  const startAutoBet = useCallback(async (customBetCount) => {
+  const startBasicAutoBet = useCallback(async (customBetCount) => {
     if (isRunning) return;
     
     setIsRunning(true);
@@ -270,7 +270,61 @@ export function useAutoBet() {
         }
 
         stats.currentBet = Math.max(0.01, Math.min(stats.currentBet, state.balance));
+
+        if (autoConfig.stopOnWin && stats.totalProfit >= autoConfig.winTarget) {
+          stopAutoBet();
+          toast.success('Win target reached!');
+          return;
+        }
+
+        if (autoConfig.stopOnLoss && stats.totalProfit <= -autoConfig.lossLimit) {
+          stopAutoBet();
+          toast.error('Loss limit reached!');
+          return;
+        }
+
+      } catch (error) {
+        stopAutoBet();
+        console.error('Auto bet error:', error);
+      }
+    };
+
+    intervalRef.current = setInterval(runBet, 600);
+  }, [isRunning, autoConfig, state.betAmount, state.stats.totalProfit, state.balance, placeSingleBet, stopAutoBet]);
+
+  const startAdvancedAutoBet = useCallback(async (customBetCount) => {
+    if (isRunning) return;
+    
+    setIsRunning(true);
+    statsRef.current = {
+      betsPlaced: 0,
+      currentStreak: 0,
+      currentBet: state.betAmount,
+      totalProfit: 0,
+      maxBets: customBetCount ?? autoConfig.numberOfBets
+    };
+
+    const runBet = async () => {
+      try {
+        const stats = statsRef.current;
+        
+        if (stats.betsPlaced >= stats.maxBets) {
+          stopAutoBet();
+          return;
+        }
+
+        const result = await placeSingleBet(stats.currentBet);
+        stats.betsPlaced++;
+        stats.totalProfit += result.profit;
+        
+        if (result.win) {
+          stats.currentStreak = stats.currentStreak > 0 ? stats.currentStreak + 1 : 1;
+        } else {
+          stats.currentStreak = stats.currentStreak < 0 ? stats.currentStreak - 1 : -1;
+        }
+
         applyStrategy(result);
+        stats.currentBet = Math.max(0.01, Math.min(stats.currentBet, state.balance));
 
         if (autoConfig.stopOnWin && stats.totalProfit >= autoConfig.winTarget) {
           stopAutoBet();
@@ -297,7 +351,8 @@ export function useAutoBet() {
     isRunning,
     autoConfig,
     setAutoConfig,
-    startAutoBet,
+    startBasicAutoBet,
+    startAdvancedAutoBet,
     stopAutoBet,
     stats: statsRef.current,
     selectedStrategy,

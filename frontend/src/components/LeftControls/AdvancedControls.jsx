@@ -8,12 +8,12 @@ import { useState } from 'react';
 
 export default function AdvancedControls() {
   const { state, dispatch } = useGame();
-  const { isRunning, autoConfig, setAutoConfig, startAutoBet, stopAutoBet, stats, selectedStrategy, setSelectedStrategy, customStrategies, saveCustomStrategy, deleteCustomStrategy } = useAutoBet();
+  const { isRunning, autoConfig, setAutoConfig, startAdvancedAutoBet, stopAutoBet, stats, selectedStrategy, setSelectedStrategy, customStrategies, saveCustomStrategy, deleteCustomStrategy } = useAutoBet();
   const [showStrategyBuilder, setShowStrategyBuilder] = useState(false);
   const [numberOfBets, setNumberOfBets] = useState(10);
 
   const handleStartAutoBet = () => {
-    startAutoBet(numberOfBets);
+    startAdvancedAutoBet(numberOfBets);
   };
 
   return (
@@ -109,7 +109,7 @@ export default function AdvancedControls() {
         disabled={!isRunning && state.balance < state.betAmount}
         className="w-full"
       >
-        {isRunning ? 'Stop Autobet' : 'Start Autobet'}
+        {isRunning ? 'Stop Strategy Autobet' : 'Start Strategy Autobet'}
       </Button>
 
       <StrategyPanel
