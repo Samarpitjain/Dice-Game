@@ -16,6 +16,11 @@ export default function AdvancedControls() {
     startAdvancedAutoBet(numberOfBets);
   };
 
+  const handleMaxBet = () => {
+    const maxBet = Math.min(state.balance, state.adminMaxBet || state.balance); // Use adminMaxBet if available
+    dispatch({ type: 'SET_BET_AMOUNT', payload: maxBet });
+  };
+
   return (
     <div className="space-y-6">
       {/* Bet Amount */}
@@ -37,7 +42,7 @@ export default function AdvancedControls() {
           <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: state.betAmount * 2 })} className="flex-1">
             2x
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: state.balance })} className="flex-1">
+          <Button size="sm" variant="secondary" onClick={handleMaxBet} className="flex-1">
             Max
           </Button>
         </div>

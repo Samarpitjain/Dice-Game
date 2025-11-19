@@ -11,7 +11,8 @@ export const placeBet = async (req, res) => {
     const userId = req.user.id;
 
     // Validation
-    if (!betAmount || betAmount < 0.01 || betAmount > 1000) {
+    const maxBet = parseFloat(process.env.MAX_BET) || 10000;
+    if (!betAmount || betAmount < 0.01 || betAmount > maxBet) {
       return res.status(400).json({ error: 'Invalid bet amount' });
     }
     
@@ -169,6 +170,16 @@ export const verifyBet = async (req, res) => {
     res.json({ roll });
   } catch (error) {
     console.error('Verify bet error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getGameConfig = async (req, res) => {
+  try {
+    const maxBet = parseFloat(process.env.MAX_BET) || 10000;
+    res.json({ maxBet });
+  } catch (error) {
+    console.error('Get game config error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

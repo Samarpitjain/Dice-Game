@@ -16,6 +16,11 @@ export default function AutoControls() {
     }));
   };
 
+  const handleMaxBet = () => {
+    const effectiveMaxBet = state.maxBet > state.balance ? state.balance : state.maxBet;
+    dispatch({ type: 'SET_BET_AMOUNT', payload: effectiveMaxBet });
+  };
+
   return (
     <div className="space-y-6">
       {/* Bet Amount */}
@@ -37,7 +42,7 @@ export default function AutoControls() {
           <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: state.betAmount * 2 })} className="flex-1">
             2x
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: state.balance })} className="flex-1">
+          <Button size="sm" variant="secondary" onClick={handleMaxBet} className="flex-1">
             Max
           </Button>
         </div>
@@ -84,7 +89,9 @@ export default function AutoControls() {
               >
                 Reset
               </button>
-              <div className="flex-1 flex items-center gap-2 bg-accent-blue rounded px-3">
+              <div className={`flex-1 flex items-center gap-2 rounded px-3 ${
+                autoConfig.resetOnWin ? 'bg-accent-blue/50' : 'bg-accent-blue'
+              }`}>
                 <span className="text-sm text-text-primary">Increase by:</span>
                 <input
                   type="number"
@@ -92,8 +99,8 @@ export default function AutoControls() {
                   onChange={(e) => updateConfig('increaseOnWin', e.target.value)}
                   min="0"
                   max="100"
-                  disabled={isRunning}
-                  className="flex-1 bg-transparent border-none text-text-primary text-sm focus:outline-none"
+                  disabled={isRunning || autoConfig.resetOnWin}
+                  className="flex-1 bg-transparent border-none text-text-primary text-sm focus:outline-none disabled:opacity-50"
                 />
                 <span className="text-sm text-text-secondary">%</span>
               </div>
@@ -113,7 +120,9 @@ export default function AutoControls() {
               >
                 Reset
               </button>
-              <div className="flex-1 flex items-center gap-2 bg-accent-blue rounded px-3">
+              <div className={`flex-1 flex items-center gap-2 rounded px-3 ${
+                autoConfig.resetOnLoss ? 'bg-accent-blue/50' : 'bg-accent-blue'
+              }`}>
                 <span className="text-sm text-text-primary">Increase by:</span>
                 <input
                   type="number"
@@ -121,8 +130,8 @@ export default function AutoControls() {
                   onChange={(e) => updateConfig('increaseOnLoss', e.target.value)}
                   min="0"
                   max="100"
-                  disabled={isRunning}
-                  className="flex-1 bg-transparent border-none text-text-primary text-sm focus:outline-none"
+                  disabled={isRunning || autoConfig.resetOnLoss}
+                  className="flex-1 bg-transparent border-none text-text-primary text-sm focus:outline-none disabled:opacity-50"
                 />
                 <span className="text-sm text-text-secondary">%</span>
               </div>

@@ -23,14 +23,18 @@ export default function GamePage() {
   useSocket(); // Initialize socket connection
 
   useEffect(() => {
-    // Auto-login as demo user
+    // Auto-login as demo user (always fresh login)
     const loginDemo = async () => {
       try {
+        // Clear any existing token first
+        localStorage.removeItem('token');
+        
         const response = await authAPI.login('demo-user');
         localStorage.setItem('token', response.data.token);
         dispatch({ type: 'SET_USER', payload: response.data.user });
       } catch (error) {
         console.error('Auto-login failed:', error);
+        toast.error('Failed to connect to game server');
       }
     };
     loginDemo();

@@ -9,14 +9,17 @@ export default function DiceControls() {
 
   const payout = calculatePayout(winChance);
 
+  const handleMultiplierChange = (value) => {
+    const multiplier = parseFloat(value) || 0;
+    if (multiplier >= 1.01 && multiplier <= 9900) {
+      const chance = (0.99 / multiplier) * 100;
+      dispatch({ type: 'SET_WIN_CHANCE', payload: chance });
+    }
+  };
+
   const handleWinChanceChange = (value) => {
     const chance = parseFloat(value) || 0;
     dispatch({ type: 'SET_WIN_CHANCE', payload: Math.max(0.01, Math.min(95, chance)) });
-  };
-
-  const handleTargetChange = (value) => {
-    const newTarget = parseFloat(value) || 0;
-    dispatch({ type: 'SET_TARGET', payload: Math.max(0.01, Math.min(99.99, newTarget)) });
   };
 
   const handleDirectionSwitch = () => {
@@ -30,10 +33,14 @@ export default function DiceControls() {
         <label className="block text-sm text-text-secondary mb-2">Multiplier</label>
         <div className="relative">
           <input
-            type="text"
-            value={formatMultiplier(payout)}
-            readOnly
-            className="w-full bg-[#0f212e] border border-border-color rounded-lg px-4 py-3 text-text-primary font-mono focus:outline-none focus:border-[#557086]"
+            type="number"
+            value={payout.toFixed(4)}
+            onChange={(e) => handleMultiplierChange(e.target.value)}
+            disabled={isRolling}
+            step="0.01"
+            min="1.01"
+            max="9900"
+            className="w-full bg-[#0f212e] border border-border-color rounded-lg px-4 py-3 text-text-primary font-mono focus:outline-none focus:border-[#557086] disabled:opacity-50"
           />
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary text-sm">×</span>
         </div>
@@ -45,24 +52,17 @@ export default function DiceControls() {
           Roll {direction === 'over' ? 'Over' : 'Under'}
         </label>
         <div className="relative">
-          <input
-            type="number"
-            value={target}
-            onChange={(e) => handleTargetChange(e.target.value)}
-            disabled={isRolling}
-            step="0.01"
-            min="0.01"
-            max="99.99"
-            className="w-full bg-[#0f212e] border border-border-color rounded-lg px-4 py-3 text-text-primary font-mono focus:outline-none focus:border-[#557086] disabled:opacity-50"
-          />
-          <button
-            onClick={handleDirectionSwitch}
-            disabled={isRolling}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-[#1a2c38] rounded transition-colors disabled:opacity-50"
-            title="Switch direction"
-          >
-            <RefreshCw size={16} className="text-text-secondary" />
-          </button>
+          <div className="w-full bg-[#0f212e] border border-border-color rounded-lg px-4 py-3 text-text-primary font-mono flex items-center justify-between">
+            <span>{target.toFixed(2)}</span>
+            <button
+              onClick={handleDirectionSwitch}
+              disabled={isRolling}
+              className="p-1.5 hover:bg-[#1a2c38] rounded transition-colors disabled:opacity-50"
+              title="Switch direction"
+            >
+              <RefreshCw size={16} className="text-text-secondary" />
+            </button>
+          </div>
         </div>
       </div>
 

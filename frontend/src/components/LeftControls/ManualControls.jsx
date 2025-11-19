@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useGame } from '../../contexts/GameContext';
 import { gameAPI } from '../../utils/api';
 import { calculatePayout } from '../../utils/fairness';
@@ -11,7 +11,19 @@ export default function ManualControls() {
   const { state, dispatch } = useGame();
   const [isPlacingBet, setIsPlacingBet] = useState(false);
 
-  const { betAmount, winChance, direction, target, balance, isRolling } = state;
+  const { betAmount, winChance, direction, target, balance, isRolling, maxBet } = state;
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await gameAPI.getConfig();
+        dispatch({ type: 'SET_MAX_BET', payload: response.data.maxBet });
+      } catch (error) {
+        console.error('Failed to fetch game config:', error);
+      }
+    };
+    fetchConfig();
+  }, [dispatch]);
 
   const payout = calculatePayout(winChance);
   const potentialWin = betAmount * payout;
@@ -25,6 +37,11 @@ export default function ManualControls() {
 
   const handleQuickBet = (multiplier) => {
     dispatch({ type: 'SET_BET_AMOUNT', payload: betAmount * multiplier });
+  };
+
+  const handleMaxBet = () => {
+    const effectiveMaxBet = maxBet > balance ? balance : maxBet;
+    dispatch({ type: 'SET_BET_AMOUNT', payload: effectiveMaxBet });
   };
 
   const placeBet = async () => {
@@ -96,7 +113,7 @@ export default function ManualControls() {
           <Button size="sm" variant="secondary" onClick={() => handleQuickBet(2)} className="flex-1">
             2x
           </Button>
-          <Button size="sm" variant="secondary" onClick={() => dispatch({ type: 'SET_BET_AMOUNT', payload: balance })} className="flex-1">
+          <Button size="sm" variant="secondary" onClick={handleMaxBet} className="flex-1">
             Max
           </Button>
         </div>

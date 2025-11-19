@@ -12,6 +12,7 @@ const initialState = {
   isRolling: false,
   lastRoll: null,
   betHistory: [],
+  maxBet: 10000,
   seeds: {
     clientSeed: '',
     serverSeedHash: '',
@@ -47,9 +48,10 @@ function gameReducer(state, action) {
       };
 
     case 'SET_BET_AMOUNT':
+      const maxAllowed = Math.min(state.maxBet, state.balance);
       return {
         ...state,
-        betAmount: Math.max(0.01, Math.min(1000, action.payload))
+        betAmount: Math.max(0.01, Math.min(maxAllowed, action.payload))
       };
 
     case 'SET_WIN_CHANCE':
@@ -111,6 +113,12 @@ function gameReducer(state, action) {
       return {
         ...state,
         betHistory: action.payload
+      };
+
+    case 'SET_MAX_BET':
+      return {
+        ...state,
+        maxBet: action.payload
       };
 
     default:

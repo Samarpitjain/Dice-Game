@@ -39,6 +39,7 @@ export const gameAPI = {
   placeBet: (betData) => api.post('/api/game/roll', betData),
   getBetHistory: (params) => api.get('/api/game/history', { params }),
   verifyBet: (params) => api.get('/api/game/verify', { params }),
+  getConfig: () => api.get('/api/game/config'),
 };
 
 export const seedAPI = {

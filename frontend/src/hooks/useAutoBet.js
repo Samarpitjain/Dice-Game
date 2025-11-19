@@ -35,8 +35,8 @@ export function useAutoBet() {
     lossLimit: 0,
     increaseOnWin: 0,
     increaseOnLoss: 0,
-    resetOnWin: false,
-    resetOnLoss: false
+    resetOnWin: true,
+    resetOnLoss: true
   });
   
   const intervalRef = useRef(null);
