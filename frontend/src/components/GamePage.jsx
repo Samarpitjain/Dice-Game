@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Zap } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
 import { useSocket } from '../hooks/useSocket';
-import { authAPI } from '../utils/api';
+import { authAPI, gameAPI } from '../utils/api';
 import Header from './Header';
 import RollBar from './Main/RollBar';
 import ManualControls from './LeftControls/ManualControls';
@@ -23,21 +23,24 @@ export default function GamePage() {
   useSocket(); // Initialize socket connection
 
   useEffect(() => {
-    // Auto-login as demo user (always fresh login)
-    const loginDemo = async () => {
+    const init = async () => {
       try {
-        // Clear any existing token first
         localStorage.removeItem('token');
         
-        const response = await authAPI.login('demo-user');
-        localStorage.setItem('token', response.data.token);
-        dispatch({ type: 'SET_USER', payload: response.data.user });
+        const [authResponse, configResponse] = await Promise.all([
+          authAPI.login('demo-user'),
+          gameAPI.getConfig()
+        ]);
+        
+        localStorage.setItem('token', authResponse.data.token);
+        dispatch({ type: 'SET_USER', payload: authResponse.data.user });
+        dispatch({ type: 'SET_MAX_BET', payload: configResponse.data.maxBet });
       } catch (error) {
-        console.error('Auto-login failed:', error);
+        console.error('Initialization failed:', error);
         toast.error('Failed to connect to game server');
       }
     };
-    loginDemo();
+    init();
   }, []);
 
   if (!state.user) {
