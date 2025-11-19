@@ -18,6 +18,8 @@ services:
         generateValue: true
       - key: FRONTEND_URL
         value: https://your-frontend-url.vercel.app
+      - key: MAX_BET
+        value: 10000
 
 databases:
   - name: dice-game-db
