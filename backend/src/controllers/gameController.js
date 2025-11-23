@@ -33,9 +33,7 @@ export const placeBet = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Skip balance check for demo users (they manage balance locally)
-    const isDemoUser = user.username.startsWith('Demo_');
-    if (!isDemoUser && user.balance < betAmountCents) {
+    if (user.balance < betAmountCents) {
       return res.status(400).json({ error: 'Insufficient balance' });
     }
 
@@ -90,15 +88,12 @@ export const placeBet = async (req, res) => {
     // Save bet first
     await bet.save();
     
-    // For demo users, don't update balance in DB (managed locally)
-    // For regular users, atomically update balance and nonce
-    const updateFields = isDemoUser 
-      ? { $inc: { nonce: 1 } }
-      : { $inc: { nonce: 1, balance: profitCents } };
-    
+    // Atomically update user balance and increment nonce
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      updateFields,
+      {
+        $inc: { nonce: 1, balance: profitCents }
+      },
       { new: true }
     );
 
@@ -185,6 +180,34 @@ export const getGameConfig = async (req, res) => {
     res.json({ maxBet });
   } catch (error) {
     console.error('Get game config error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const addBalance = async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const userId = req.user.id;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+
+    const amountCents = Math.round(amount * 100);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $inc: { balance: amountCents } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ newBalance: updatedUser.balance / 100 });
+  } catch (error) {
+    console.error('Add balance error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

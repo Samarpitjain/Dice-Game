@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Shield, User, LogOut, Plus } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
+import { gameAPI } from '../utils/api';
 import { formatNumber } from '../utils/format';
 import Button from './Shared/Button';
 import Input from './Shared/Input';
@@ -19,17 +20,21 @@ export default function Header() {
     window.location.reload();
   };
 
-  const handleAddBalance = () => {
+  const handleAddBalance = async () => {
     const amount = parseFloat(addAmount);
     if (isNaN(amount) || amount <= 0) {
       toast.error('Please enter a valid amount');
       return;
     }
-    const newBalance = state.balance + amount;
-    dispatch({ type: 'UPDATE_BALANCE', payload: newBalance });
-    setShowAddBalance(false);
-    setAddAmount('');
-    toast.success(`Added ${formatNumber(amount)} to balance`);
+    try {
+      const response = await gameAPI.addBalance(amount);
+      dispatch({ type: 'UPDATE_BALANCE', payload: response.data.newBalance });
+      setShowAddBalance(false);
+      setAddAmount('');
+      toast.success(`Added ${formatNumber(amount)} to balance`);
+    } catch (error) {
+      toast.error('Failed to add balance');
+    }
   };
 
   return (

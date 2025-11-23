@@ -40,6 +40,7 @@ export const gameAPI = {
   getBetHistory: (params) => api.get('/api/game/history', { params }),
   verifyBet: (params) => api.get('/api/game/verify', { params }),
   getConfig: () => api.get('/api/game/config'),
+  addBalance: (amount) => api.post('/api/game/add-balance', { amount }),
 };
 
 export const seedAPI = {

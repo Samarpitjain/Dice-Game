@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useGame } from '../../contexts/GameContext';
 import { gameAPI } from '../../utils/api';
 import { calculatePayout } from '../../utils/fairness';
@@ -11,19 +11,7 @@ export default function ManualControls() {
   const { state, dispatch } = useGame();
   const [isPlacingBet, setIsPlacingBet] = useState(false);
 
-  const { betAmount, winChance, direction, target, balance, isRolling, maxBet } = state;
-
-  useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const response = await gameAPI.getConfig();
-        dispatch({ type: 'SET_MAX_BET', payload: response.data.maxBet });
-      } catch (error) {
-        console.error('Failed to fetch game config:', error);
-      }
-    };
-    fetchConfig();
-  }, [dispatch]);
+  const { betAmount, winChance, direction, target, balance, isRolling } = state;
 
   const payout = calculatePayout(winChance);
   const potentialWin = betAmount * payout;
@@ -40,8 +28,8 @@ export default function ManualControls() {
   };
 
   const handleMaxBet = () => {
-    const effectiveMaxBet = maxBet > balance ? balance : maxBet;
-    dispatch({ type: 'SET_BET_AMOUNT', payload: effectiveMaxBet });
+    const maxBet = Math.min(balance, state.adminMaxBet || balance); // Use adminMaxBet if available
+    dispatch({ type: 'SET_BET_AMOUNT', payload: maxBet });
   };
 
   const placeBet = async () => {
@@ -66,19 +54,17 @@ export default function ManualControls() {
         clientSeed: state.seeds.clientSeed
       });
 
-      const newBalance = balance - betAmount + (response.data.win ? response.data.payout : 0);
-      
       const betResult = {
         ...response.data,
         betAmount,
         target,
         direction,
         winChance,
-        newBalance,
         createdAt: new Date().toISOString()
       };
 
       dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
+      dispatch({ type: 'UPDATE_BALANCE', payload: response.data.newBalance });
       dispatch({ type: 'UPDATE_SEEDS', payload: { nonce: response.data.newNonce } });
       
       if (betResult.win) {
