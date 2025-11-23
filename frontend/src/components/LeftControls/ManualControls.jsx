@@ -60,12 +60,11 @@ export default function ManualControls() {
         target,
         direction,
         winChance,
+        newBalance: response.data.newBalance,
         createdAt: new Date().toISOString()
       };
 
       dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
-      dispatch({ type: 'UPDATE_BALANCE', payload: response.data.newBalance });
-      dispatch({ type: 'UPDATE_SEEDS', payload: { nonce: response.data.newNonce } });
       
       if (betResult.win) {
         toast.success(`Won ${formatNumber(betResult.profit)}!`);
