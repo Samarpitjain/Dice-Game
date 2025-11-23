@@ -3,6 +3,7 @@ import { Zap } from 'lucide-react';
 import { useGame } from '../contexts/GameContext';
 import { useSocket } from '../hooks/useSocket';
 import { authAPI, gameAPI } from '../utils/api';
+import { getDemoUserId, getBalance } from '../utils/localStorage';
 import Header from './Header';
 import RollBar from './Main/RollBar';
 import ManualControls from './LeftControls/ManualControls';
@@ -25,23 +26,30 @@ export default function GamePage() {
   useEffect(() => {
     const init = async () => {
       try {
+        const demoUserId = getDemoUserId();
+        const savedBalance = getBalance(demoUserId);
+        
         localStorage.removeItem('token');
         
         const [authResponse, configResponse] = await Promise.all([
-          authAPI.login('demo-user'),
+          authAPI.login(demoUserId),
           gameAPI.getConfig()
         ]);
         
         localStorage.setItem('token', authResponse.data.token);
-        dispatch({ type: 'SET_USER', payload: authResponse.data.user });
+        
+        const user = { ...authResponse.data.user, username: demoUserId };
+        dispatch({ type: 'SET_USER', payload: user });
+        dispatch({ type: 'UPDATE_BALANCE', payload: savedBalance });
         dispatch({ type: 'SET_MAX_BET', payload: configResponse.data.maxBet });
+        dispatch({ type: 'LOAD_LOCAL_HISTORY' });
       } catch (error) {
         console.error('Initialization failed:', error);
         toast.error('Failed to connect to game server');
       }
     };
     init();
-  }, []);
+  }, [dispatch]);
 
   if (!state.user) {
     return (

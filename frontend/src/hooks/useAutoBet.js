@@ -209,12 +209,16 @@ export function useAutoBet() {
         clientSeed: state.seeds.clientSeed
       });
 
+      const newBalance = state.balance - betAmount + (response.data.win ? response.data.payout : 0);
+
       const betResult = {
         ...response.data,
         betAmount,
         target: state.target,
         direction: state.direction,
-        winChance: state.winChance
+        winChance: state.winChance,
+        newBalance,
+        createdAt: new Date().toISOString()
       };
 
       dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
@@ -226,7 +230,7 @@ export function useAutoBet() {
     } finally {
       dispatch({ type: 'SET_ROLLING', payload: false });
     }
-  }, [state.target, state.direction, state.seeds.clientSeed, state.winChance, dispatch]);
+  }, [state.target, state.direction, state.seeds.clientSeed, state.winChance, state.balance, dispatch]);
 
   const startBasicAutoBet = useCallback(async (customBetCount) => {
     if (isRunning) return;

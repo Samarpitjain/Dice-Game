@@ -66,17 +66,19 @@ export default function ManualControls() {
         clientSeed: state.seeds.clientSeed
       });
 
+      const newBalance = balance - betAmount + (response.data.win ? response.data.payout : 0);
+      
       const betResult = {
         ...response.data,
         betAmount,
         target,
         direction,
         winChance,
+        newBalance,
         createdAt: new Date().toISOString()
       };
 
       dispatch({ type: 'ADD_BET_RESULT', payload: betResult });
-      dispatch({ type: 'UPDATE_BALANCE', payload: response.data.newBalance });
       dispatch({ type: 'UPDATE_SEEDS', payload: { nonce: response.data.newNonce } });
       
       if (betResult.win) {

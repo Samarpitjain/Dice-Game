@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer } from 'react';
+import { getDemoUserId, getBalance, setBalance, getHistory, addHistoryEntry } from '../utils/localStorage';
 
 const GameContext = createContext();
 
@@ -42,6 +43,9 @@ function gameReducer(state, action) {
       };
 
     case 'UPDATE_BALANCE':
+      if (state.user?.username) {
+        setBalance(state.user.username, action.payload);
+      }
       return {
         ...state,
         balance: action.payload
@@ -85,6 +89,23 @@ function gameReducer(state, action) {
 
     case 'ADD_BET_RESULT':
       const bet = action.payload;
+      if (state.user?.username) {
+        setBalance(state.user.username, bet.newBalance);
+        addHistoryEntry(state.user.username, {
+          target: bet.target,
+          bet: bet.betAmount,
+          roll: bet.roll,
+          result: bet.win ? 'win' : 'loss',
+          profit: bet.profit,
+          time: bet.createdAt || new Date().toISOString(),
+          direction: bet.direction,
+          winChance: bet.winChance,
+          serverSeedHash: bet.serverSeedHash || state.seeds.serverSeedHash,
+          clientSeed: bet.clientSeed || state.seeds.clientSeed,
+          nonce: bet.nonce !== undefined ? bet.nonce : state.seeds.nonce,
+          payout: bet.payout || 0
+        });
+      }
       return {
         ...state,
         lastRoll: bet,
@@ -114,6 +135,32 @@ function gameReducer(state, action) {
         ...state,
         betHistory: action.payload
       };
+
+    case 'LOAD_LOCAL_HISTORY':
+      if (state.user?.username) {
+        const localHistory = getHistory(state.user.username);
+        const formattedHistory = localHistory.map((entry, index) => ({
+          _id: `local_${index}`,
+          betAmount: entry.bet,
+          target: entry.target,
+          roll: entry.roll,
+          win: entry.result === 'win',
+          profit: entry.profit,
+          createdAt: entry.time,
+          direction: entry.direction,
+          winChance: entry.winChance,
+          serverSeedHash: entry.serverSeedHash,
+          clientSeed: entry.clientSeed,
+          nonce: entry.nonce,
+          payout: entry.payout || 0,
+          payoutMultiplier: entry.payout && entry.bet ? entry.payout / entry.bet : 0
+        }));
+        return {
+          ...state,
+          betHistory: formattedHistory
+        };
+      }
+      return state;
 
     case 'SET_MAX_BET':
       return {

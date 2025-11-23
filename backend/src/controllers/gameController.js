@@ -33,7 +33,9 @@ export const placeBet = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    if (user.balance < betAmountCents) {
+    // Skip balance check for demo users (they manage balance locally)
+    const isDemoUser = user.username.startsWith('Demo_');
+    if (!isDemoUser && user.balance < betAmountCents) {
       return res.status(400).json({ error: 'Insufficient balance' });
     }
 
@@ -88,12 +90,15 @@ export const placeBet = async (req, res) => {
     // Save bet first
     await bet.save();
     
-    // Atomically update user balance and increment nonce
+    // For demo users, don't update balance in DB (managed locally)
+    // For regular users, atomically update balance and nonce
+    const updateFields = isDemoUser 
+      ? { $inc: { nonce: 1 } }
+      : { $inc: { nonce: 1, balance: profitCents } };
+    
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      {
-        $inc: { nonce: 1, balance: profitCents }
-      },
+      updateFields,
       { new: true }
     );
 

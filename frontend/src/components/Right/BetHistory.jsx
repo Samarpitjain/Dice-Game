@@ -9,17 +9,8 @@ export default function BetHistory() {
   const [selectedBet, setSelectedBet] = useState(null);
 
   useEffect(() => {
-    const fetchHistory = async () => {
-      try {
-        const response = await gameAPI.getBetHistory({ limit: 20 });
-        dispatch({ type: 'SET_BET_HISTORY', payload: response.data.bets });
-      } catch (error) {
-        console.error('Failed to fetch bet history:', error);
-      }
-    };
-
     if (state.user) {
-      fetchHistory();
+      dispatch({ type: 'LOAD_LOCAL_HISTORY' });
     }
   }, [state.user, dispatch]);
 
